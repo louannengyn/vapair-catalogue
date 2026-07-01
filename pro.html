@@ -114,10 +114,70 @@ hr.sep { border: none; border-top: 1px solid rgba(41,182,246,0.08); margin: 10px
 .formule-sep { color: rgba(41,182,246,0.3); }
 .gamme-panel { display: none; }
 .gamme-panel.visible { display: block; }
+
+/* -- Barre de recherche -- */
+.search-wrapper {
+  max-width: 500px;
+  margin: 0 auto 24px;
+  padding: 0 20px;
+  position: relative;
+}
+.search-input {
+  width: 100%;
+  padding: 12px 44px 12px 18px;
+  border-radius: 30px;
+  border: 1.5px solid rgba(41,182,246,0.25);
+  background: rgba(255,255,255,0.05);
+  color: #e8f4ff;
+  font-size: 14px;
+  outline: none;
+  transition: all .2s;
+  font-family: inherit;
+}
+.search-input::placeholder { color: rgba(232,244,255,0.3); }
+.search-input:focus { border-color: rgba(41,182,246,0.6); background: rgba(41,182,246,0.06); box-shadow: 0 0 0 3px rgba(41,182,246,0.1); }
+.search-icon {
+  position: absolute;
+  right: 36px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(232,244,255,0.3);
+  font-size: 16px;
+  pointer-events: none;
+}
+.search-results-title {
+  text-align: center;
+  color: rgba(232,244,255,0.4);
+  font-size: 12px;
+  margin-bottom: 16px;
+  letter-spacing: 0.5px;
+}
+#search-results-view {
+  display: none;
+  padding: 0 16px;
+}
+#search-results-view .products-grid {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.search-no-result {
+  text-align: center;
+  color: rgba(232,244,255,0.3);
+  padding: 40px 20px;
+  font-size: 14px;
+}
 </style>
 </head>
 <body>
 <div class="header"><h1>VAPAIR <span class="pro-badge">PRO</span></h1><p>Catalogue professionnel</p></div>
+<div class="search-wrapper">
+  <input class="search-input" id="search-input" type="text" placeholder="Rechercher un arome..." oninput="handleSearch(this.value)" autocomplete="off">
+  <span class="search-icon">&#128269;</span>
+</div>
+<div id="search-results-view">
+  <div class="search-results-title" id="search-results-title"></div>
+  <div class="products-grid" id="search-results-grid"></div>
+</div>
 <div id="catalogue">
   <div class="cat-card fruites-frais" onclick="showCategory('fruites-frais')">
     <div class="icon">❄️</div>
@@ -193,6 +253,47 @@ function switchGamme(zone,id){
   if(tab) tab.classList.add("active");
   var panel=document.getElementById(zone+"-panel-"+id);
   if(panel) panel.classList.add("visible");
+}
+
+function handleSearch(query) {
+  var q = query.trim().toLowerCase();
+  var catalogue = document.getElementById('catalogue');
+  var productsView = document.getElementById('products-view');
+  var searchView = document.getElementById('search-results-view');
+  var hintText = document.getElementById('hint-text');
+  var grid = document.getElementById('search-results-grid');
+  var title = document.getElementById('search-results-title');
+  
+  if (!q) {
+    searchView.style.display = 'none';
+    catalogue.style.display = 'grid';
+    if (hintText) hintText.style.display = '';
+    productsView.style.display = 'none';
+    return;
+  }
+  
+  catalogue.style.display = 'none';
+  if (hintText) hintText.style.display = 'none';
+  productsView.style.display = 'none';
+  searchView.style.display = 'block';
+  
+  var allCards = Array.from(document.querySelectorAll('.product-card'));
+  var results = allCards.filter(function(card) {
+    var name = (card.querySelector('.product-name') || {}).textContent || '';
+    var flavor = (card.querySelector('.product-flavor') || {}).textContent || '';
+    return name.toLowerCase().indexOf(q) !== -1 || flavor.toLowerCase().indexOf(q) !== -1;
+  });
+  
+  grid.innerHTML = '';
+  if (results.length === 0) {
+    grid.innerHTML = '<div class="search-no-result">Aucun résultat pour ' + query + '</div>';
+    title.textContent = '';
+  } else {
+    title.textContent = results.length + ' résultat' + (results.length > 1 ? 's' : '');
+    results.forEach(function(card) {
+      grid.appendChild(card.cloneNode(true));
+    });
+  }
 }
 </script>
 </body>
