@@ -268,16 +268,19 @@ function handleSearch(query) {
     searchView.style.display = 'none';
     catalogue.style.display = '';
     if (hintText) hintText.style.display = '';
-    productsView.style.display = 'none';
+    // Restore productsView to CSS-controlled state (remove inline style)
+    productsView.style.removeProperty('display');
     return;
   }
   
+  // Hide catalogue and hint
   catalogue.style.display = 'none';
   if (hintText) hintText.style.display = 'none';
+  // Hide products-view without touching its class (use inline style override)
   productsView.style.display = 'none';
   searchView.style.display = 'block';
   
-  var allCards = Array.from(document.querySelectorAll('.product-card'));
+  var allCards = Array.from(document.querySelectorAll('#products-view .product-card'));
   var seen = {};
   var results = [];
   allCards.forEach(function(card) {
