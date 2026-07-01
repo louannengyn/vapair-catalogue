@@ -105,11 +105,11 @@ function showCategory(cat){
   var title=document.getElementById("section-title-el");
   var names={"1l":"1 Litre","fruites-frais":"Fruités frais","non-frais":"Non frais","gourmands":"Gourmands"};
   title.textContent=names[cat]||cat;
-  title.className="section-title "+(cat==="gourmands"?"gourmands":cat==="non-frais"?"non-frais":"");
+  title.className="section-title "+(cat==="gourmands"?"gourmands":cat==="non-frais"?"non-frais":cat==="1l"?"onelitre":"");
   document.getElementById("1l-content").style.display="none";
   document.getElementById("gourmands-content").style.display=cat==="gourmands"?"block":"none";
   document.getElementById("non-frais-content").style.display=cat==="non-frais"?"block":"none";
-  document.getElementById("fruites-frais-content").style.display=(cat!=="gourmands"&&cat!=="non-frais")?"block":"none";
+  document.getElementById("fruites-frais-content").style.display=cat==="fruites-frais"?"block":"none";
   if(cat==="gourmands") {
     var ft=document.querySelector("#gourmands-content .gamme-tab");
     if(ft && !document.querySelector("#gourmands-content .gamme-tab.active")) switchGamme("gourmands","vintage");
