@@ -278,10 +278,17 @@ function handleSearch(query) {
   searchView.style.display = 'block';
   
   var allCards = Array.from(document.querySelectorAll('.product-card'));
-  var results = allCards.filter(function(card) {
+  var seen = {};
+  var results = [];
+  allCards.forEach(function(card) {
     var name = (card.querySelector('.product-name') || {}).textContent || '';
     var flavor = (card.querySelector('.product-flavor') || {}).textContent || '';
-    return name.toLowerCase().indexOf(q) !== -1 || flavor.toLowerCase().indexOf(q) !== -1;
+    var key = name.trim() + '|' + flavor.trim();
+    if (seen[key]) return;
+    if (name.toLowerCase().indexOf(q) !== -1 || flavor.toLowerCase().indexOf(q) !== -1) {
+      seen[key] = true;
+      results.push(card);
+    }
   });
   
   grid.innerHTML = '';
